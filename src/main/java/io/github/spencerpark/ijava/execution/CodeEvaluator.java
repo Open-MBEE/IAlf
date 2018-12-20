@@ -25,6 +25,7 @@ package io.github.spencerpark.ijava.execution;
 
 import io.github.spencerpark.ijava.JavaKernel;
 import jdk.jshell.*;
+import org.apache.commons.lang3.StringEscapeUtils;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -64,7 +65,7 @@ public class CodeEvaluator {
 
     private void init() throws Exception {
         for (String script : this.startupScripts)
-            eval(script);
+            eval(script, true);
 
         this.startupScripts.clear();
     }
@@ -132,12 +133,28 @@ public class CodeEvaluator {
     }
 
     public Object eval(String code) throws Exception {
+        return eval(code, false);
+    }
+
+    public Object eval(String code, boolean raw) throws Exception {
         // The init() method runs some code in the shell to initialize the environment. As such
         // it is deferred until the first user requested evaluation to cleanly return errors when
         // they happen.
         if (!this.isInitialized) {
             this.isInitialized = true;
             init();
+        }
+
+        if (!raw) {
+            StringBuilder builder = new StringBuilder();
+            builder.append("import org.modeldriven.alf.interactive.execution.AlfInteractive;");
+            builder.append("AlfInteractive alfi = (AlfInteractive) System.getProperties().computeIfAbsent(\"ALFI\", ignored -> new AlfInteractive(System.getenv(\"ALF_LIBRARY_PATH\"), System.getenv(\"ALF_MODEL_PATH\") != null ? System.getenv(\"ALF_MODEL_PATH\") : \"\"));");
+            //builder.append("System.out.println(System.getProperty(\"user.dir\"));");
+            builder.append("alfi.eval(\"");
+            //builder.append("System.out.println(\"");
+            builder.append(StringEscapeUtils.escapeJava(code));
+            builder.append("\");");
+            code = builder.toString();
         }
 
         Object lastEvalResult = null;

@@ -107,9 +107,9 @@ publishing {
 }
 
 jupyter {
-    kernelName = 'java'
-    kernelDisplayName = 'Java'
-    kernelLanguage = 'java'
+    kernelName = 'alf'
+    kernelDisplayName = 'Alf'
+    kernelLanguage = 'alf'
     kernelInterruptMode = 'message'
 
     kernelParameters {
@@ -135,6 +135,14 @@ jupyter {
         string('timeout', 'IJAVA_TIMEOUT') {
             aliases NO_TIMEOUT: '-1'
             description = '''A duration specifying a timeout (in milliseconds by default) for a _single top level statement_. If less than `1` then there is no timeout. If desired a time may be specified with a `TimeUnit` may be given following the duration number (ex `"30 SECONDS"`).'''
+        }
+
+        string('alf-library-path', 'ALF_LIBRARY_PATH') {
+            description = '''Path to the Alf library folder.'''
+        }
+
+        string('alf-model-path', 'ALF_MODEL_PATH') {
+            description = '''Path to the Alf model folder.'''
         }
     }
 }
